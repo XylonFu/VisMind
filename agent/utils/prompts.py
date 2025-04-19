@@ -12,9 +12,8 @@ def get_student_alpha_prompt():
                 "1. Develop a detailed discussion where you articulate your reasoning, think aloud, and challenge student_beta’s approaches.\n"
                 "2. Incorporate reflection, debate, and evidence-based challenges to encourage error detection and collaborative correction.\n"
                 "3. Seamlessly continue the conversation by integrating any hints or feedback from the teacher.\n"
-                "4. Emphasize the process and reasoning without directly providing the final answer.\n"
-                "5. Only output your conversation contribution, excluding any extra content, praise, thanks, or encouragement.\n\n"
-                "START THE CONVERSATION NOW. STAY SKEPTICAL. STAY CRITICAL. BEGIN WITH 'student_alpha:'."
+                "4. Only output your conversation contribution, excluding any extra content, praise, thanks, or encouragement.\n\n"
+                "START THE CONVERSATION NOW. BEGIN WITH 'student_alpha:'."
             )
         ),
         MessagesPlaceholder(variable_name="messages")
@@ -32,10 +31,9 @@ def get_student_beta_prompt():
                 "1. Develop a detailed discussion where you articulate your reasoning, think aloud, and challenge student_alpha’s approaches.\n"
                 "2. Incorporate reflection, debate, and evidence-based challenges to encourage error detection and collaborative correction.\n"
                 "3. Seamlessly continue the conversation by integrating any hints or feedback from the teacher.\n"
-                "4. Emphasize the process and reasoning without directly providing the final answer.\n"
-                "5. After reasoning, place '#TO_TEACHER#' at the end if you believe everything is correct, or '#TO_STUDENT_ALPHA#' if you find mistakes.\n"
-                "6. Only output your conversation contribution, excluding any extra content, praise, thanks, or encouragement.\n\n"
-                "START THE CONVERSATION NOW. STAY SKEPTICAL. STAY CRITICAL. BEGIN WITH 'student_beta:'."
+                "4. After reasoning, place '#TO_TEACHER#' at the end if you believe everything is correct, or '#TO_STUDENT_ALPHA#' if you find mistakes.\n"
+                "5. Only output your conversation contribution, excluding any extra content, praise, thanks, or encouragement.\n\n"
+                "START THE CONVERSATION NOW. BEGIN WITH 'student_beta:'."
             )
         ),
         MessagesPlaceholder(variable_name="messages")
@@ -57,7 +55,7 @@ def get_teacher_prompt(question, solution):
                 "3. Provide constructive feedback, hints, and suggestions that guide the students to refine the conversation without revealing the solution.\n"
                 "4. After reviewing, place '#END_CONVERSATION#' at the end if everything is correct, or '#TO_STUDENT_BETA#' if you find mistakes.\n"
                 "5. Only output your feedback contribution, excluding any extra content, praise, thanks, or encouragement.\n\n"
-                "PROVIDE YOUR FEEDBACK NOW. STAY SKEPTICAL. STAY CRITICAL. BEGIN WITH 'teacher:'."
+                "PROVIDE YOUR FEEDBACK NOW. BEGIN WITH 'teacher:'."
             )
         ),
         MessagesPlaceholder(variable_name="messages")
