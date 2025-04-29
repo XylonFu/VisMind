@@ -66,5 +66,5 @@ def process_directory(directory: str):
 
 
 if __name__ == "__main__":
-    directory_path = "output/GeoQAPlus/event-0419"
+    directory_path = "../output/GeoQAPlus/event-0419"
     process_directory(directory_path)
