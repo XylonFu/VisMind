@@ -4,8 +4,8 @@ from typing import Dict, Any, List
 
 from langchain_core.messages import HumanMessage
 
-from agent import students_teacher
-from agent.utils.prompts import get_student_alpha_prompt, get_student_beta_prompt, get_teacher_prompt
+from agents import students_teacher
+from agents.utils.prompts import get_student_alpha_prompt, get_student_beta_prompt, get_teacher_prompt
 from config import get_agent_config, graph_config, event_config
 from utils.io_utils import load_image, output_exists, save_output
 from utils.text_utils import process_answer, MessageEncoder
