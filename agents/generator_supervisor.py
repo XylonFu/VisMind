@@ -2,9 +2,9 @@ from langchain_openai import ChatOpenAI
 from langgraph.constants import END
 from langgraph.graph import StateGraph
 
-from agent.cores.nodes import generator_node, supervisor_node
-from agent.cores.states import StudentsTeacherState
-from agent.utils.helpers import check_finish_condition
+from agents.cores.nodes import generator_node, supervisor_node
+from agents.cores.states import StudentsTeacherState
+from agents.utils.helpers import check_finish_condition
 
 
 def graph(generator_config, supervisor_config, graph_config):

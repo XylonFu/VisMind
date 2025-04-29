@@ -1,4 +1,4 @@
-from agent.utils.helpers import transform_message_types
+from agents.utils.helpers import transform_message_types
 
 
 def student_alpha_node(state, student_alpha):
