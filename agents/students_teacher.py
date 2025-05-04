@@ -9,6 +9,7 @@ from agents.utils.helpers import check_finish_condition, check_submit_condition
 
 def graph(student_alpha_config, student_beta_config, teacher_config, graph_config):
     session_turn = graph_config.get("session_turn")
+    teacher_reference = graph_config.pop("reference")
     student_alpha_prompt = student_alpha_config.pop("prompt")
     student_beta_prompt = student_beta_config.pop("prompt")
     teacher_prompt = teacher_config.pop("prompt")
@@ -24,7 +25,7 @@ def graph(student_alpha_config, student_beta_config, teacher_config, graph_confi
     graph_builder = StateGraph(StudentsTeacherState)
     graph_builder.add_node("student_alpha", lambda state: student_alpha_node(state, student_alpha))
     graph_builder.add_node("student_beta", lambda state: student_beta_node(state, student_beta))
-    graph_builder.add_node("teacher", lambda state: teacher_node(state, teacher))
+    graph_builder.add_node("teacher", lambda state: teacher_node(state, teacher, teacher_reference))
 
     graph_builder.add_edge("student_alpha", "student_beta")
     graph_builder.add_conditional_edges(
