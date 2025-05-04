@@ -5,8 +5,8 @@ from typing import Dict, Any, List
 from langchain_core.messages import HumanMessage
 
 from agents import students_teacher
-from agents.utils.prompts import get_student_alpha_prompt, get_student_beta_prompt, get_teacher_prompt
-from config import get_agent_config, graph_config, event_config
+from agents.utils.prompts import get_student_alpha_prompt, get_student_beta_prompt, get_teacher_system_prompt
+from config import get_agent_config, get_graph_config, event_config
 from utils.io_utils import load_image, output_exists, save_output
 from utils.text_utils import process_answer, MessageEncoder
 
@@ -34,7 +34,8 @@ def process_single_file(json_file: Path):
 
         student_alpha_config = get_agent_config(get_student_alpha_prompt())
         student_beta_config = get_agent_config(get_student_beta_prompt())
-        teacher_config = get_agent_config(get_teacher_prompt(question, solution))
+        teacher_config = get_agent_config(get_teacher_system_prompt())
+        graph_config = get_graph_config(question, solution, image)
 
         app = students_teacher.graph(student_alpha_config, student_beta_config, teacher_config, graph_config)
 
