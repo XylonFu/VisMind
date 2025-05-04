@@ -10,9 +10,16 @@ def get_agent_config(prompt):
     }
 
 
-graph_config = {
-    "session_turn": 5
-}
+def get_graph_config(question, solution, image):
+    return {
+        "reference": {
+            "question": question,
+            "solution": solution,
+            "image": image,
+        },
+        "session_turn": 5,
+    }
+
 
 event_config = {
     "recursion_limit": 100
