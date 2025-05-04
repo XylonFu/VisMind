@@ -1,3 +1,5 @@
+import re
+
 from langchain_core.messages import HumanMessage, AIMessage
 from typing_extensions import Literal
 
@@ -29,3 +31,35 @@ def transform_message_types(state, current_agent):
         else:
             if not isinstance(messages[i], HumanMessage):
                 messages[i] = HumanMessage(content=messages[i].content)
+
+
+def extract_human_contents(state):
+    contents = []
+    marker_pattern = re.compile(r"#TO_STUDENT_ALPHA#|#TO_STUDENT_BETA#|#TO_TEACHER#|#END_CONVERSATION#")
+    empty_role_pattern = re.compile(r'^(?:system|student_alpha|student_beta|teacher):\s*$')
+
+    human_msgs = [msg for msg in state.get("messages", []) if isinstance(msg, HumanMessage)]
+
+    for idx, msg in enumerate(human_msgs):
+        raw = msg.content
+
+        if isinstance(raw, list):
+            texts = [seg["text"] for seg in raw if seg.get("type") == "text"]
+            txt = "".join(texts)
+        else:
+            txt = str(raw)
+
+        if idx == 0:
+            txt = "system: " + txt
+
+        txt = marker_pattern.sub("", txt).strip()
+
+        if re.search(r"[)\uFF09]$", txt):
+            txt += "。"
+
+        if empty_role_pattern.match(txt):
+            continue
+
+        contents.append(txt)
+
+    return "\n".join(contents)
