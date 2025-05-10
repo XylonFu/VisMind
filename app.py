@@ -4,19 +4,19 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from config import CONCURRENCY
+from config import CONCURRENCY, DEFAULT_INPUT_DIR, DEFAULT_OUTPUT_DIR
 from processor import process_single_file
 
 load_dotenv()
 
 
-def main():
-    json_path = INPUT_DIR / "json"
+def main(input_dir: Path, output_dir: Path):
+    json_path = input_dir / "json"
     json_files = list(json_path.glob("*.json"))
     print(f"📂 共发现 {len(json_files)} 个待处理文件")
 
     with ThreadPoolExecutor(max_workers=CONCURRENCY) as executor:
-        futures = {executor.submit(process_single_file, file): file.name for file in json_files}
+        futures = {executor.submit(process_single_file, file, input_dir, output_dir): file.name for file in json_files}
         for future in as_completed(futures):
             file_name = futures[future]
             try:
@@ -27,21 +27,11 @@ def main():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process GeoQAPlus data.")
-    parser.add_argument(
-        "--input_dir",
-        type=str,
-        default=str(Path(__file__).parent / "input/GeoQAPlus"),
-        help="Path to input directory"
-    )
-    parser.add_argument(
-        "--output_dir",
-        type=str,
-        default=str(Path(__file__).parent / "output/GeoQAPlus/event-0510"),
-        help="Path to output directory"
-    )
+    parser.add_argument("--input_dir", type=str, default=str(DEFAULT_INPUT_DIR))
+    parser.add_argument("--output_dir", type=str, default=str(DEFAULT_OUTPUT_DIR))
     args = parser.parse_args()
 
-    INPUT_DIR = Path(args.input_dir)
-    OUTPUT_DIR = Path(args.output_dir)
+    input_dir = Path(args.input_dir)
+    output_dir = Path(args.output_dir)
 
-    main()
+    main(input_dir, output_dir)

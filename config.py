@@ -1,3 +1,6 @@
+from pathlib import Path
+
+
 def get_agent_config(prompt):
     return {
         "prompt": prompt,
@@ -22,4 +25,6 @@ event_config = {
     "recursion_limit": 100
 }
 
+DEFAULT_INPUT_DIR = Path(__file__).parent / "input/GeoQAPlus"
+DEFAULT_OUTPUT_DIR = Path(__file__).parent / "output/GeoQAPlus/event-0510"
 CONCURRENCY = 25

@@ -11,7 +11,7 @@ from utils.io_utils import load_image, output_exists, save_output
 from utils.text_utils import process_answer, MessageEncoder
 
 
-def process_single_file(json_file: Path):
+def process_single_file(json_file: Path, input_dir: Path, output_dir: Path):
     file_stem = json_file.stem
     if output_exists(file_stem):
         print(f"⏭️ {file_stem} 已存在，跳过处理。")
@@ -25,7 +25,7 @@ def process_single_file(json_file: Path):
         solution = process_answer(data["answer"])
         image_path = data["image_path"]
 
-        image = load_image(image_path)
+        image = load_image(image_path, input_dir)
         message = HumanMessage(
             content=[
                 {"type": "text", "text": question},
@@ -45,7 +45,7 @@ def process_single_file(json_file: Path):
         for event in app.stream({"messages": [message]}, config=event_config):
             event_list.append(event)
 
-        save_output(file_stem, message, event_list, encoder_cls=MessageEncoder)
+        save_output(file_stem, message, event_list, output_dir, encoder_cls=MessageEncoder)
         print(f"✅ {json_file.name} 处理完成，保存成功。")
     except Exception as e:
         print(f"❌ {json_file.name} 处理失败: {str(e)}")
