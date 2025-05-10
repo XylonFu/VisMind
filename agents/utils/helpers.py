@@ -38,9 +38,9 @@ def extract_human_contents(state):
     marker_pattern = re.compile(r"#TO_STUDENT_ALPHA#|#TO_STUDENT_BETA#|#TO_TEACHER#|#END_CONVERSATION#")
     empty_role_pattern = re.compile(r'^(?:system|student_alpha|student_beta|teacher):\s*$')
 
-    human_msgs = [msg for msg in state.get("messages", []) if isinstance(msg, HumanMessage)]
+    msgs = [msg for msg in state.get("messages", [])]
 
-    for idx, msg in enumerate(human_msgs):
+    for idx, msg in enumerate(msgs):
         raw = msg.content
 
         if isinstance(raw, list):
