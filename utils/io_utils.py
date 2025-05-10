@@ -5,7 +5,7 @@ from typing import Any, List, Dict
 
 from langchain_core.messages import HumanMessage
 
-from config import INPUT_DIR, OUTPUT_DIR
+from app import INPUT_DIR, OUTPUT_DIR
 
 write_lock = Lock()
 

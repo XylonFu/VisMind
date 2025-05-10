@@ -1,10 +1,11 @@
+import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 from dotenv import load_dotenv
 
 from config import CONCURRENCY
 from processor import process_single_file
-from utils.io_utils import INPUT_DIR
 
 load_dotenv()
 
@@ -25,4 +26,22 @@ def main():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Process GeoQAPlus data.")
+    parser.add_argument(
+        "--input_dir",
+        type=str,
+        default=str(Path(__file__).parent / "input/GeoQAPlus"),
+        help="Path to input directory"
+    )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default=str(Path(__file__).parent / "output/GeoQAPlus/event-0510"),
+        help="Path to output directory"
+    )
+    args = parser.parse_args()
+
+    INPUT_DIR = Path(args.input_dir)
+    OUTPUT_DIR = Path(args.output_dir)
+
     main()
