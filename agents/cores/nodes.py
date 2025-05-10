@@ -1,4 +1,5 @@
-from agents.utils.helpers import transform_message_types
+from agents.utils.helpers import transform_message_types, extract_human_contents
+from agents.utils.prompts import get_teacher_user_prompt
 
 
 def student_alpha_node(state, student_alpha):
@@ -21,10 +22,16 @@ def student_beta_node(state, student_beta):
     return {"messages": [result], "session_turn": session_turn, "senders": senders}
 
 
-def teacher_node(state, teacher):
-    transform_message_types(state, current_agent="teacher")
+def teacher_node(state, teacher, reference):
+    question = reference.get("question")
+    solution = reference.get("solution")
+    image = reference.get("image")
 
-    result = teacher.invoke(state)
+    transform_message_types(state, current_agent="teacher")
+    conversation = extract_human_contents(state)
+    prompt = get_teacher_user_prompt(conversation, question, solution, image)
+
+    result = teacher.invoke(prompt)
     session_turn = state.get("session_turn", 0)
     senders = state.get("senders", ["system"]) + ["teacher"]
 
