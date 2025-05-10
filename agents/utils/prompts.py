@@ -1,4 +1,4 @@
-from langchain_core.messages import SystemMessage
+from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 
@@ -10,7 +10,7 @@ def get_student_alpha_prompt():
                 "Task: Contribute to a multi-turn conversation with student_beta to solve a geometry problem. Incorporate any provided images and text, and strictly follow the given problem context.\n\n"
                 "Instructions:\n"
                 "1. Develop a detailed discussion where you articulate your reasoning, think aloud, and challenge student_beta’s approaches.\n"
-                "2. Incorporate reflection, debate, and evidence-based challenges to encourage error detection and collaborative correction.\n"
+                "2. Demonstrate cognitive behaviors including verification (systematic error-checking), backtracking (abandoning failing approaches), subgoal setting (decomposing problems into manageable steps), and backward chaining (reasoning from desired outcomes to initial inputs).\n"
                 "3. Seamlessly continue the conversation by integrating any hints or feedback from the teacher.\n"
                 "4. Only output your conversation contribution, excluding any extra content, praise, thanks, or encouragement.\n\n"
                 "START THE CONVERSATION NOW. BEGIN WITH 'student_alpha:'."
@@ -29,7 +29,7 @@ def get_student_beta_prompt():
                 "Task: Contribute to a multi-turn conversation with student_alpha to solve a geometry problem. Incorporate any provided images and text, and strictly follow the given problem context.\n\n"
                 "Instructions:\n"
                 "1. Develop a detailed discussion where you articulate your reasoning, think aloud, and challenge student_alpha’s approaches.\n"
-                "2. Incorporate reflection, debate, and evidence-based challenges to encourage error detection and collaborative correction.\n"
+                "2. Demonstrate cognitive behaviors including verification (systematic error-checking), backtracking (abandoning failing approaches), subgoal setting (decomposing problems into manageable steps), and backward chaining (reasoning from desired outcomes to initial inputs).\n"
                 "3. Seamlessly continue the conversation by integrating any hints or feedback from the teacher.\n"
                 "4. After reasoning, place '#TO_TEACHER#' at the end if you believe everything is correct, or '#TO_STUDENT_ALPHA#' if you find mistakes.\n"
                 "5. Only output your conversation contribution, excluding any extra content, praise, thanks, or encouragement.\n\n"
@@ -41,26 +41,42 @@ def get_student_beta_prompt():
     return prompt
 
 
-def get_teacher_prompt(question, solution):
+def get_teacher_system_prompt():
     prompt = ChatPromptTemplate.from_messages([
         SystemMessage(
             content=(
                 "Role: teacher\n"
-                "Task: Evaluate the conversation between student_alpha and student_beta based on the geometry problem, images, and text provided. You have the following reference:\n"
-                "Question: " + question + "\n"
-                "Solution: " + solution + "\n\n"
+                "Task: Evaluate the conversation between student_alpha and student_beta based on the geometry problem, images, and text provided.\n"
                 "Instructions:\n"
                 "1. Review the conversation for both the reasoning process and the final answer accuracy.\n"
                 "2. Identify any errors, misconceptions, or incomplete reasoning in the discussion.\n"
-                "3. Provide constructive feedback, hints, and suggestions that guide the students to refine the conversation without revealing the solution.\n"
+                "3. Provide constructive feedback, hints, and suggestions that guide the students to refine the conversation.\n"
                 "4. After reviewing, place '#END_CONVERSATION#' at the end if everything is correct, or '#TO_STUDENT_BETA#' if you find mistakes.\n"
-                "5. Only output your feedback contribution, excluding any extra content, praise, thanks, or encouragement.\n\n"
-                "PROVIDE YOUR FEEDBACK NOW. BEGIN WITH 'teacher:'."
+                "5. Only output your feedback contribution, excluding any extra content, praise, thanks, or encouragement."
             )
         ),
         MessagesPlaceholder(variable_name="messages")
     ])
     return prompt
+
+
+def get_teacher_user_prompt(conversation, question, solution, image):
+    prompt = [HumanMessage(
+        content=[{
+            "type": "text", "text": (
+                f"Conversation:\n{conversation}\n\n"
+                f"Question:\n{question}\n\n"
+                f"Solution:\n{solution}\n\n"
+                "Please review the conversation in light of the proposed solution.\n"
+                "Provide your feedback starting with 'teacher:'. "
+                "If everything is correct, conclude with '#END_CONVERSATION#'. "
+                "If you find any errors, conclude with '#TO_STUDENT_BETA#'.")},
+            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image}"}}
+        ]
+    )]
+
+    return prompt
+
 
 
 def get_generator_prompt():
