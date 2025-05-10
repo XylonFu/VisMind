@@ -26,6 +26,6 @@ event_config = {
 }
 
 INPUT_DIR = Path(__file__).parent / "input/GeoQAPlus"
-OUTPUT_DIR = Path(__file__).parent / "output/GeoQAPlus/event-0419"
+OUTPUT_DIR = Path(__file__).parent / "output/GeoQAPlus/event-0510"
 
 CONCURRENCY = 25
