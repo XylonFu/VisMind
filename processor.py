@@ -13,7 +13,7 @@ from utils.text_utils import process_answer, MessageEncoder
 
 def process_single_file(json_file: Path, input_dir: Path, output_dir: Path):
     file_stem = json_file.stem
-    if output_exists(file_stem):
+    if output_exists(file_stem, output_dir):
         print(f"⏭️ {file_stem} 已存在，跳过处理。")
         return
 
