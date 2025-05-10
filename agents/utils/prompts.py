@@ -51,7 +51,7 @@ def get_teacher_system_prompt():
                 "1. Review the conversation for both the reasoning process and the final answer accuracy.\n"
                 "2. Identify any errors, misconceptions, or incomplete reasoning in the discussion.\n"
                 "3. Provide constructive feedback, hints, and suggestions that guide the students to refine the conversation.\n"
-                "4. After reviewing, place '#END_CONVERSATION#' at the end if everything is correct, or '#TO_STUDENT_BETA#' if you find mistakes.\n"
+                "4. After reviewing, place '#END_CONVERSATION#' at the end if everything is correct, or '#TO_STUDENT_ALPHA#' if you find mistakes.\n"
                 "5. Only output your feedback contribution, excluding any extra content, praise, thanks, or encouragement."
             )
         ),
@@ -70,7 +70,7 @@ def get_teacher_user_prompt(conversation, question, solution, image):
                 "Please review the conversation in light of the proposed solution.\n"
                 "Provide your feedback starting with 'teacher:'. "
                 "If everything is correct, conclude with '#END_CONVERSATION#'. "
-                "If you find any errors, conclude with '#TO_STUDENT_BETA#'.")},
+                "If you find any errors, conclude with '#TO_STUDENT_ALPHA#'.")},
             {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image}"}}
         ]
     )]

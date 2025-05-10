@@ -36,7 +36,7 @@ def graph(student_alpha_config, student_beta_config, teacher_config, graph_confi
     graph_builder.add_conditional_edges(
         "teacher",
         lambda state: check_finish_condition(state, session_turn),
-        {"yes": END, "no": "student_beta"}
+        {"yes": END, "no": "student_alpha"}
     )
 
     graph_builder.set_entry_point("student_alpha")
