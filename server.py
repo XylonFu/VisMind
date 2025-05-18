@@ -3,7 +3,7 @@ import signal
 import subprocess
 
 
-def start_vllm_server(model_path, served_model_name,
+def start_vllm_server(conda_env_path, model_path, served_model_name,
                       devices=None, tensor_parallel_size=4, max_model_len=16384):
     if devices is None:
         devices = [0, 1, 2, 3]
@@ -11,6 +11,7 @@ def start_vllm_server(model_path, served_model_name,
     env = os.environ.copy()
     env["CUDA_VISIBLE_DEVICES"] = devices_str
     cmd = [
+        "conda", "run", "--prefix", os.path.expandvars(conda_env_path), "--no-capture-output",
         "vllm", "serve", model_path,
         "--tensor-parallel-size", str(tensor_parallel_size),
         "--max-model-len", str(max_model_len),

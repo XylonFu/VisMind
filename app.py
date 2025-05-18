@@ -4,7 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from config import CONCURRENCY, DEFAULT_INPUT_DIR, DEFAULT_OUTPUT_DIR, MODEL_PATH, SERVED_MODEL_NAME
+from config import CONCURRENCY, DEFAULT_INPUT_DIR, DEFAULT_OUTPUT_DIR, CONDA_ENV_PATH, MODEL_PATH, SERVED_MODEL_NAME
 from processor import process_single_file
 from server import start_vllm_server, stop_vllm_server
 
@@ -35,6 +35,6 @@ if __name__ == "__main__":
     input_dir = Path(args.input_dir)
     output_dir = Path(args.output_dir)
 
-    vllm_server = start_vllm_server(MODEL_PATH, SERVED_MODEL_NAME)
+    vllm_server = start_vllm_server(CONDA_ENV_PATH, MODEL_PATH, SERVED_MODEL_NAME)
     main(input_dir, output_dir)
     stop_vllm_server(vllm_server)
