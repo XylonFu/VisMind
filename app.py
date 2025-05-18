@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 from config import CONCURRENCY, DEFAULT_INPUT_DIR, DEFAULT_OUTPUT_DIR
 from processor import process_single_file
+from server import start_vllm_server, stop_vllm_server
 
 load_dotenv()
 
@@ -34,4 +35,8 @@ if __name__ == "__main__":
     input_dir = Path(args.input_dir)
     output_dir = Path(args.output_dir)
 
+    model_path = "/gpfs/work/int/qiufengwang/xinlong_fu/downloads/models/Qwen/Qwen2.5-VL-72B-Instruct"
+    served_model_name = "qwen2.5-vl-72b-instruct"
+    vllm_server = start_vllm_server(model_path, served_model_name)
     main(input_dir, output_dir)
+    stop_vllm_server(vllm_server)
