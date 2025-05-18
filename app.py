@@ -1,15 +1,13 @@
 import argparse
+import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from dotenv import load_dotenv
 
-from config import CONCURRENCY, DEFAULT_INPUT_DIR, DEFAULT_OUTPUT_DIR, CONDA_ENV_PATH, MODEL_PATH, SERVED_MODEL_NAME, \
-    API_KEY
+from config import CONCURRENCY, DEFAULT_INPUT_DIR, DEFAULT_OUTPUT_DIR, CONDA_ENV_PATH, MODEL_PATH, SERVED_MODEL_NAME
 from processor import process_single_file
 from server import start_vllm_server, stop_server, wait_server
-
-load_dotenv()
 
 
 def main(input_dir: Path, output_dir: Path):
@@ -28,6 +26,8 @@ def main(input_dir: Path, output_dir: Path):
 
 
 if __name__ == "__main__":
+    load_dotenv()
+
     parser = argparse.ArgumentParser(description="Process GeoQAPlus data.")
     parser.add_argument("--input_dir", type=str, default=str(DEFAULT_INPUT_DIR))
     parser.add_argument("--output_dir", type=str, default=str(DEFAULT_OUTPUT_DIR))
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     input_dir = Path(args.input_dir)
     output_dir = Path(args.output_dir)
 
-    vllm_server = start_vllm_server(CONDA_ENV_PATH, MODEL_PATH, SERVED_MODEL_NAME, API_KEY)
+    vllm_server = start_vllm_server(CONDA_ENV_PATH, MODEL_PATH, SERVED_MODEL_NAME, os.getenv("OPENAI_API_KEY"))
     wait_server()
     main(input_dir, output_dir)
     stop_server(vllm_server)

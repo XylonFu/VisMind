@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 
@@ -33,4 +32,3 @@ CONCURRENCY = 25
 CONDA_ENV_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/conda/env/vllm"
 MODEL_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/downloads/models/Qwen/Qwen2.5-VL-72B-Instruct"
 SERVED_MODEL_NAME = "qwen2.5-vl-72b-instruct"
-API_KEY = os.getenv("OPENAI_API_KEY")
