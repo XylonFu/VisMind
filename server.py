@@ -28,7 +28,7 @@ def start_vllm_server(conda_env_path, model_path, served_model_name,
 
 
 def wait_server(host="127.0.0.1", port=8000, timeout=600):
-    url = f"http://{host}:{port}/healthz"
+    url = f"http://{host}:{port}/health"
     deadline = time.time() + timeout
     while time.time() < deadline:
         try:
