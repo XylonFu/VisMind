@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from config import CONCURRENCY, DEFAULT_INPUT_DIR, DEFAULT_OUTPUT_DIR, CONDA_ENV_PATH, MODEL_PATH, SERVED_MODEL_NAME, \
     API_KEY
 from processor import process_single_file
-from server import start_vllm_server, stop_vllm_server, wait_for_server
+from server import start_vllm_server, stop_server, wait_server
 
 load_dotenv()
 
@@ -37,6 +37,6 @@ if __name__ == "__main__":
     output_dir = Path(args.output_dir)
 
     vllm_server = start_vllm_server(CONDA_ENV_PATH, MODEL_PATH, SERVED_MODEL_NAME, API_KEY)
-    wait_for_server()
+    wait_server()
     main(input_dir, output_dir)
-    stop_vllm_server(vllm_server)
+    stop_server(vllm_server)

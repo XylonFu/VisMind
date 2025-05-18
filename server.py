@@ -27,7 +27,7 @@ def start_vllm_server(conda_env_path, model_path, served_model_name,
     return subprocess.Popen(cmd, env=env)
 
 
-def wait_for_server(host="127.0.0.1", port=8000, timeout=600):
+def wait_server(host="127.0.0.1", port=8000, timeout=600):
     url = f"http://{host}:{port}/healthz"
     deadline = time.time() + timeout
     while time.time() < deadline:
@@ -42,6 +42,6 @@ def wait_for_server(host="127.0.0.1", port=8000, timeout=600):
     raise RuntimeError(f"Server didn’t become ready within {timeout}s")
 
 
-def stop_vllm_server(process):
+def stop_server(process):
     process.send_signal(signal.SIGTERM)
     process.wait()
