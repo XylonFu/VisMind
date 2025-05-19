@@ -37,6 +37,8 @@ if __name__ == "__main__":
     output_dir = Path(args.output_dir)
 
     vllm_server = start_vllm_server(CONDA_ENV_PATH, MODEL_PATH, SERVED_MODEL_NAME, os.getenv("OPENAI_API_KEY"))
-    wait_server()
-    main(input_dir, output_dir)
-    stop_server(vllm_server)
+    try:
+        wait_server()
+        main(input_dir, output_dir)
+    finally:
+        stop_server(vllm_server)
