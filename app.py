@@ -2,6 +2,7 @@ import argparse
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+from time import sleep
 
 from dotenv import load_dotenv
 
@@ -42,3 +43,4 @@ if __name__ == "__main__":
         main(input_dir, output_dir)
     finally:
         stop_server(vllm_server)
+        sleep(60)
