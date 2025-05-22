@@ -8,7 +8,7 @@ import requests
 
 def start_vllm_server(conda_env_path, model_path, served_model_name,
                       api_key, host="127.0.0.1", port=8000,
-                      devices=None, tensor_parallel_size=4, max_model_len=16384):
+                      devices=None, tensor_parallel_size=4, max_model_len=16384, max_num_seqs=256):
     if devices is None:
         devices = [0, 1, 2, 3]
     devices_str = ",".join(str(d) for d in devices)
@@ -20,6 +20,7 @@ def start_vllm_server(conda_env_path, model_path, served_model_name,
         "--served-model-name", served_model_name,
         "--tensor-parallel-size", str(tensor_parallel_size),
         "--max-model-len", str(max_model_len),
+        "--max-num-seqs", str(max_num_seqs),
         "--host", host,
         "--port", str(port),
         "--api-key", api_key,
