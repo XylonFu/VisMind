@@ -1,12 +1,13 @@
 import argparse
-import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from time import sleep
 
 from dotenv import load_dotenv
 
-from config import CONCURRENCY, DEFAULT_INPUT_DIR, DEFAULT_OUTPUT_DIR, CONDA_ENV_PATH, MODEL_PATH, SERVED_MODEL_NAME
+from config import (CONCURRENCY, CONDA_ENV_PATH,
+                    TEACHER_MODEL_PATH, TEACHER_MODEL_NAME, TEACHER_MODEL_KEYS,
+                    STUDENT_MODEL_PATH, STUDENT_MODEL_NAME, STUDENT_MODEL_KEYS)
 from processor import process_single_file
 from server import start_vllm_server, stop_server, wait_server
 
@@ -30,17 +31,24 @@ if __name__ == "__main__":
     load_dotenv()
 
     parser = argparse.ArgumentParser(description="Process GeoQAPlus data.")
-    parser.add_argument("--input_dir", type=str, default=str(DEFAULT_INPUT_DIR))
-    parser.add_argument("--output_dir", type=str, default=str(DEFAULT_OUTPUT_DIR))
+    parser.add_argument("--input_dir", type=str)
+    parser.add_argument("--output_dir", type=str)
     args = parser.parse_args()
 
     input_dir = Path(args.input_dir)
     output_dir = Path(args.output_dir)
 
-    vllm_server = start_vllm_server(CONDA_ENV_PATH, MODEL_PATH, SERVED_MODEL_NAME, os.getenv("OPENAI_API_KEY"))
+    teacher_server = start_vllm_server(CONDA_ENV_PATH, TEACHER_MODEL_PATH, TEACHER_MODEL_NAME,
+                                       devices=[0, 1], tensor_parallel_size=2,
+                                       port=8000, api_key=TEACHER_MODEL_KEYS)
+    student_server = start_vllm_server(CONDA_ENV_PATH, STUDENT_MODEL_PATH, STUDENT_MODEL_NAME,
+                                       devices=[3, 4], tensor_parallel_size=2,
+                                       port=8001, api_key=STUDENT_MODEL_KEYS)
     try:
-        wait_server()
+        wait_server(port=8000)
+        wait_server(port=8001)
         main(input_dir, output_dir)
     finally:
-        stop_server(vllm_server)
+        stop_server(teacher_server)
+        stop_server(student_server)
         sleep(60)

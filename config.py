@@ -1,12 +1,17 @@
-from pathlib import Path
+import os
 
 
-def get_agent_config(prompt):
+def get_agent_config(prompt, model, base_url, api_key):
     return {
         "prompt": prompt,
-        "model": "qwen2.5-vl-72b-instruct",
-        "temperature": 1.0,
+        "model": model,
+        "base_url": base_url,
+        "api_key": api_key,
         "max_tokens": 8192,
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0,
     }
 
 
@@ -25,10 +30,16 @@ event_config = {
     "recursion_limit": 100
 }
 
-DEFAULT_INPUT_DIR = Path(__file__).parent / "input/GeoQAPlus"
-DEFAULT_OUTPUT_DIR = Path(__file__).parent / "output/GeoQAPlus/event-0510"
 CONCURRENCY = 25
 
 CONDA_ENV_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/conda/env/vllm"
-MODEL_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/downloads/models/Qwen/Qwen2.5-VL-72B-Instruct"
-SERVED_MODEL_NAME = "qwen2.5-vl-72b-instruct"
+
+STUDENT_MODEL_BASE = os.getenv("STUDENT_MODEL_BASE")
+STUDENT_MODEL_KEYS = os.getenv("STUDENT_MODEL_KEYS")
+STUDENT_MODEL_NAME = "qwen2.5-vl-3b-instruct"
+STUDENT_MODEL_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/downloads/models/Qwen/Qwen2.5-VL-3B-Instruct"
+
+TEACHER_MODEL_BASE = os.getenv("TEACHER_MODEL_BASE")
+TEACHER_MODEL_KEYS = os.getenv("TEACHER_MODEL_KEYS")
+TEACHER_MODEL_NAME = "qwen2.5-vl-72b-instruct"
+TEACHER_MODEL_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/downloads/models/Qwen/Qwen2.5-VL-72B-Instruct"
