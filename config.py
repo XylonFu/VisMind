@@ -1,5 +1,9 @@
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 def get_agent_config(prompt, model, base_url, api_key):
     return {

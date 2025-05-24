@@ -3,8 +3,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from time import sleep
 
-from dotenv import load_dotenv
-
 from config import (CONCURRENCY, CONDA_ENV_PATH,
                     TEACHER_MODEL_PATH, TEACHER_MODEL_NAME, TEACHER_MODEL_KEYS,
                     STUDENT_MODEL_PATH, STUDENT_MODEL_NAME, STUDENT_MODEL_KEYS)
@@ -28,8 +26,6 @@ def main(input_dir: Path, output_dir: Path):
 
 
 if __name__ == "__main__":
-    load_dotenv()
-
     parser = argparse.ArgumentParser(description="Process GeoQAPlus data.")
     parser.add_argument("--input_dir", type=str)
     parser.add_argument("--output_dir", type=str)
