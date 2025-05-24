@@ -38,7 +38,7 @@ if __name__ == "__main__":
                                        devices=[0, 1], tensor_parallel_size=2,
                                        port=8000, api_key=TEACHER_MODEL_KEYS)
     student_server = start_vllm_server(CONDA_ENV_PATH, STUDENT_MODEL_PATH, STUDENT_MODEL_NAME,
-                                       devices=[3, 4], tensor_parallel_size=2,
+                                       devices=[2, 3], tensor_parallel_size=2,
                                        port=8001, api_key=STUDENT_MODEL_KEYS)
     try:
         wait_server(port=8000)
