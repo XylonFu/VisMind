@@ -4,8 +4,7 @@ from pathlib import Path
 from time import sleep
 
 from config import (CONCURRENCY, CONDA_ENV_PATH,
-                    TEACHER_MODEL_PATH, TEACHER_MODEL_NAME, TEACHER_MODEL_KEYS,
-                    STUDENT_MODEL_PATH, STUDENT_MODEL_NAME, STUDENT_MODEL_KEYS)
+                    TEACHER_MODEL_PATH, TEACHER_MODEL_NAME, TEACHER_MODEL_KEYS)
 from processor import process_single_file
 from server import start_vllm_server, stop_server, wait_server
 
@@ -35,16 +34,10 @@ if __name__ == "__main__":
     output_dir = Path(args.output_dir)
 
     teacher_server = start_vllm_server(CONDA_ENV_PATH, TEACHER_MODEL_PATH, TEACHER_MODEL_NAME,
-                                       devices=[0, 1], tensor_parallel_size=2,
-                                       port=8000, api_key=TEACHER_MODEL_KEYS)
-    student_server = start_vllm_server(CONDA_ENV_PATH, STUDENT_MODEL_PATH, STUDENT_MODEL_NAME,
-                                       devices=[2, 3], tensor_parallel_size=2,
-                                       port=8001, api_key=STUDENT_MODEL_KEYS)
+                                       api_key=TEACHER_MODEL_KEYS)
     try:
-        wait_server(port=8000)
-        wait_server(port=8001)
+        wait_server()
         main(input_dir, output_dir)
     finally:
         stop_server(teacher_server)
-        stop_server(student_server)
         sleep(60)
