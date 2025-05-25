@@ -50,7 +50,7 @@ def process_single_file(json_file: Path, input_dir: Path, output_dir: Path):
         for event in app.stream({"messages": [message]}, config=event_config):
             event_list.append(event)
 
-        save_output(file_stem, message, event_list, output_dir, encoder_cls=MessageEncoder)
+        save_output(file_stem, image_path, message, event_list, output_dir, encoder_cls=MessageEncoder)
         print(f"✅ {json_file.name} 处理完成，保存成功。")
     except Exception as e:
         print(f"❌ {json_file.name} 处理失败: {str(e)}")
