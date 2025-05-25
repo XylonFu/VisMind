@@ -34,14 +34,14 @@ event_config = {
     "recursion_limit": 100
 }
 
-CONCURRENCY = 25
+CONCURRENCY = 50
 
 CONDA_ENV_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/conda/env/vllm"
 
 STUDENT_MODEL_BASE = os.getenv("STUDENT_MODEL_BASE")
 STUDENT_MODEL_KEYS = os.getenv("STUDENT_MODEL_KEYS")
-STUDENT_MODEL_NAME = "qwen2.5-vl-3b-instruct"
-STUDENT_MODEL_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/downloads/models/Qwen/Qwen2.5-VL-3B-Instruct"
+STUDENT_MODEL_NAME = "qwen2.5-vl-7b-instruct"
+STUDENT_MODEL_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/downloads/models/Qwen/Qwen2.5-VL-7B-Instruct"
 
 TEACHER_MODEL_BASE = os.getenv("TEACHER_MODEL_BASE")
 TEACHER_MODEL_KEYS = os.getenv("TEACHER_MODEL_KEYS")
