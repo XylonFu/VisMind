@@ -12,7 +12,8 @@ def get_student_alpha_prompt():
                 "1. Develop a detailed discussion where you articulate your reasoning, think aloud, and challenge student_beta’s approaches.\n"
                 "2. Demonstrate cognitive behaviors including verification (systematic error-checking), backtracking (abandoning failing approaches), subgoal setting (decomposing problems into manageable steps), and backward chaining (reasoning from desired outcomes to initial inputs).\n"
                 "3. Seamlessly continue the conversation by integrating any hints or feedback from the teacher.\n"
-                "4. Only output your conversation contribution, excluding any extra content, praise, thanks, or encouragement.\n\n"
+                "4. Only output your conversation contribution, excluding any extra content, praise, thanks, or encouragement.\n"
+                "5. Communicate strictly in English, regardless of input language.\n\n"
                 "START THE CONVERSATION NOW. BEGIN WITH 'student_alpha:'."
             )
         ),
@@ -32,7 +33,8 @@ def get_student_beta_prompt():
                 "2. Demonstrate cognitive behaviors including verification (systematic error-checking), backtracking (abandoning failing approaches), subgoal setting (decomposing problems into manageable steps), and backward chaining (reasoning from desired outcomes to initial inputs).\n"
                 "3. Seamlessly continue the conversation by integrating any hints or feedback from the teacher.\n"
                 "4. After reasoning, place '#TO_TEACHER#' at the end if you believe everything is correct, or '#TO_STUDENT_ALPHA#' if you find mistakes.\n"
-                "5. Only output your conversation contribution, excluding any extra content, praise, thanks, or encouragement.\n\n"
+                "5. Only output your conversation contribution, excluding any extra content, praise, thanks, or encouragement.\n"
+                "6. Communicate strictly in English, regardless of input language.\n\n"
                 "START THE CONVERSATION NOW. BEGIN WITH 'student_beta:'."
             )
         ),
@@ -52,7 +54,8 @@ def get_teacher_system_prompt():
                 "2. Identify any errors, misconceptions, or incomplete reasoning in the discussion.\n"
                 "3. Provide constructive feedback, hints, and suggestions that guide the students to refine the conversation.\n"
                 "4. After reviewing, place '#END_CONVERSATION#' at the end if everything is correct, or '#TO_STUDENT_ALPHA#' if you find mistakes.\n"
-                "5. Only output your feedback contribution, excluding any extra content, praise, thanks, or encouragement."
+                "5. Only output your feedback contribution, excluding any extra content, praise, thanks, or encouragement.\n"
+                "6. Communicate strictly in English, regardless of input language."
             )
         ),
         MessagesPlaceholder(variable_name="messages")
