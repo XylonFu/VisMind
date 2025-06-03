@@ -69,8 +69,8 @@ def get_teacher_user_prompt(conversation, question, solution, image):
             "type": "text", "text": (
                 f"Conversation:\n{conversation}\n\n"
                 f"Question:\n{question}\n\n"
-                f"Solution:\n{solution}\n\n"
-                "Please review the conversation in light of the proposed solution.\n"
+                f"Ground Truth Solution:\n{solution}\n\n"
+                "Please evaluate the conversation based on the ground truth solution.\n"
                 "Provide your feedback starting with 'teacher:'. "
                 "If everything is correct, conclude with '#END_CONVERSATION#'. "
                 "If you find any errors, conclude with '#TO_STUDENT_ALPHA#'.")},
@@ -79,7 +79,6 @@ def get_teacher_user_prompt(conversation, question, solution, image):
     )]
 
     return prompt
-
 
 
 def get_generator_prompt():
