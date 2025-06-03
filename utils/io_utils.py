@@ -19,9 +19,9 @@ def output_exists(file_stem: str, output_dir: Path) -> bool:
     return (output_dir / f"{file_stem}.json").exists()
 
 
-def save_output(file_stem: str, image_path: str, message: HumanMessage, events: List[Dict[str, Any]], output_dir: Path,
+def save_output(file_stem: str, image_path: str, ground_truth: str, message: HumanMessage, events: List[Dict[str, Any]], output_dir: Path,
                 encoder_cls=None):
-    output_data = {"id": file_stem, "image_path": image_path,"message": message, "events": events}
+    output_data = {"id": file_stem, "image_path": image_path, "ground_truth": ground_truth, "message": message, "events": events}
     output_path = output_dir / f"{file_stem}.json"
     with write_lock, open(output_path, "w", encoding="utf-8") as f:
         json.dump(output_data, f, ensure_ascii=False, indent=2, cls=encoder_cls)
