@@ -142,6 +142,7 @@ def process_file(filepath: Path) -> Dict[str, Any]:
 
     # Return formatted result
     return {
+        "id": data.get('id', ''),
         "messages": [{"role": "assistant", "content": combined.strip()}],
         "images": [image_path]
     }
