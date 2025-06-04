@@ -79,11 +79,34 @@ def extract_ground_truth_message(data: Dict[str, Any]) -> str:
     """Extract and format ground truth message, removing prefixes and checking validity"""
     gt = data.get("ground_truth", "").strip()
 
-    # Remove various prefixes
-    prefixes = ["[Answer] Solution:", "Solution:", "[Answer]", "Answer:"]
+    # Remove various prefixes (case-insensitive)
+    prefixes = [
+        "[answer] solution:", "solution:", "[answer]", "answer:",
+        "analysis:", "explanation:", "question analysis:",
+        "analysis of the problem:", "【answer】solution:",
+        "【answer】\nsolution:"
+    ]
+
     for prefix in prefixes:
-        if gt.startswith(prefix):
+        if gt.lower().startswith(prefix.lower()):
             gt = gt[len(prefix):].strip()
+            break  # Only remove one prefix
+
+    # Handle "Given:" prefix
+    if gt.lower().startswith("given:"):
+        gt = "Given that " + gt[len("given:"):].strip()
+
+    # Ensure "since" is followed by a space (case-insensitive)
+    words = gt.split()
+    processed_words = []
+    for word in words:
+        lower_word = word.lower()
+        if lower_word.startswith('since') and len(word) > 5 and not word[5].isspace():
+            # Insert space after "since"
+            processed_words.append(word[:5] + ' ' + word[5:])
+        else:
+            processed_words.append(word)
+    gt = ' '.join(processed_words)
 
     # Check if remaining string is only A-Za-z (no meaningful content)
     if gt and all(c.isalpha() and c.isascii() for c in gt.replace(" ", "")):
