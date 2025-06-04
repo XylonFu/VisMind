@@ -55,7 +55,7 @@ def extract_human_contents(state):
         txt = marker_pattern.sub("", txt).strip()
 
         if re.search(r"[)\uFF09]$", txt):
-            txt += "。"
+            txt += "."
 
         if empty_role_pattern.match(txt):
             continue
