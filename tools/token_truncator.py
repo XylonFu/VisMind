@@ -1,4 +1,5 @@
 import json
+import os
 import random
 
 import tiktoken
@@ -15,7 +16,6 @@ def count_tokens(texts, encoder_name="cl100k_base"):
 
 def random_sample_jsonl_by_tokens(
         input_file,
-        output_file,
         max_tokens,
         encoder_name="cl100k_base",
         random_seed=42
@@ -57,6 +57,9 @@ def random_sample_jsonl_by_tokens(
         if total_tokens >= max_tokens:
             break
 
+    base, ext = os.path.splitext(input_file)
+    output_file = f"{base}-truncated{ext}"
+
     with open(output_file, 'w', encoding='utf-8') as f_out:
         for idx in selected_indices:
             json_line = json.dumps(records[idx], ensure_ascii=False)
@@ -66,9 +69,8 @@ def random_sample_jsonl_by_tokens(
 
 
 if __name__ == "__main__":
-    input_jsonl = "input.jsonl"
-    output_jsonl = "output.jsonl"
+    input_jsonl = "your_file.jsonl"
     max_tokens = 1000000
     random_seed = 42
 
-    random_sample_jsonl_by_tokens(input_jsonl, output_jsonl, max_tokens, random_seed=random_seed)
+    random_sample_jsonl_by_tokens(input_jsonl, max_tokens, random_seed=random_seed)
