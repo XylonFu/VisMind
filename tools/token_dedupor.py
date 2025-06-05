@@ -1,14 +1,15 @@
 import json
 import os
+import random
 
 
-def deduplicate_jsonl(input_file):
-    # 生成输出文件名
+def deduplicate_jsonl(input_file, random_seed=42):
     base_name = os.path.splitext(input_file)[0]
     output_file = f"{base_name}-deduped.jsonl"
 
-    seen_keys = set()  # 使用set存储已见键值
-    deduplicated_records = []  # 存储去重后的记录
+    random.seed(random_seed)
+    records_by_key = {}
+    key_order = []
 
     with open(input_file, 'r', encoding='utf-8') as f:
         for line in f:
@@ -17,13 +18,22 @@ def deduplicate_jsonl(input_file):
                 images = record.get('images', [])
                 key = images[0] if images else None
 
-                if key not in seen_keys:
-                    seen_keys.add(key)
-                    deduplicated_records.append(record)
-            except (json.JSONDecodeError, IndexError, KeyError) as e:
-                print(f"警告: 跳过格式错误的行 - {e}")
+                if key is None:
+                    continue
 
-    # 写入去重后的数据
+                if key not in records_by_key:
+                    records_by_key[key] = []
+                    key_order.append(key)
+
+                records_by_key[key].append(record)
+            except (json.JSONDecodeError, IndexError, KeyError):
+                continue
+
+    deduplicated_records = []
+    for key in key_order:
+        if records := records_by_key[key]:
+            deduplicated_records.append(random.choice(records))
+
     with open(output_file, 'w', encoding='utf-8') as f_out:
         for record in deduplicated_records:
             f_out.write(json.dumps(record, ensure_ascii=False) + '\n')
@@ -34,4 +44,4 @@ def deduplicate_jsonl(input_file):
 if __name__ == "__main__":
     input_filename = "your_file.jsonl"
     output_filename = deduplicate_jsonl(input_filename)
-    print(f"去重完成! 结果已保存至: {output_filename}")
+    print(f"Deduplication completed! Results saved to: {output_filename}")
