@@ -25,11 +25,11 @@ def student_beta_node(state, student_beta):
 def teacher_node(state, teacher, reference):
     question = reference.get("question")
     solution = reference.get("solution")
-    image = reference.get("image")
+    images = reference.get("images")
 
     transform_message_types(state, current_agent="teacher")
     conversation = extract_human_contents(state)
-    prompt = get_teacher_user_prompt(conversation, question, solution, image)
+    prompt = get_teacher_user_prompt(conversation, question, solution, images)
 
     result = teacher.invoke(prompt)
     session_turn = state.get("session_turn", 0)

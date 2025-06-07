@@ -63,20 +63,25 @@ def get_teacher_system_prompt():
     return prompt
 
 
-def get_teacher_user_prompt(conversation, question, solution, image):
-    prompt = [HumanMessage(
-        content=[{
-            "type": "text", "text": (
-                f"Conversation:\n{conversation}\n\n"
-                f"Question:\n{question}\n\n"
-                f"Ground Truth Solution:\n{solution}\n\n"
-                "Please evaluate the conversation based on the ground truth solution.\n"
-                "Provide your feedback starting with 'teacher:'. "
-                "If everything is correct, conclude with '#END_CONVERSATION#'. "
-                "If you find any errors, conclude with '#TO_STUDENT_ALPHA#'.")},
-            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image}"}}
-        ]
-    )]
+def get_teacher_user_prompt(conversation, question, solution, images):
+    content = [{
+        "type": "text", "text": (
+            f"Conversation:\n{conversation}\n\n"
+            f"Question:\n{question}\n\n"
+            f"Ground Truth Solution:\n{solution}\n\n"
+            "Please evaluate the conversation based on the ground truth solution.\n"
+            "Provide your feedback starting with 'teacher:'. "
+            "If everything is correct, conclude with '#END_CONVERSATION#'. "
+            "If you find any errors, conclude with '#TO_STUDENT_ALPHA#'.")}
+    ]
+
+    for image in images:
+        content.append({
+            "type": "image_url",
+            "image_url": {"url": image}
+        })
+
+    prompt = [HumanMessage(content=content)]
 
     return prompt
 

@@ -17,12 +17,12 @@ def get_agent_config(prompt, model, base_url, api_key):
     }
 
 
-def get_graph_config(question, solution, image):
+def get_graph_config(question, solution, images):
     return {
         "reference": {
             "question": question,
             "solution": solution,
-            "image": image,
+            "images": images,
         },
         "session_turn": 5,
     }
