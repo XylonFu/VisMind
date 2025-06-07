@@ -7,7 +7,7 @@ def get_student_alpha_prompt():
         SystemMessage(
             content=(
                 "Role: student_alpha\n"
-                "Task: Contribute to a multi-turn conversation with student_beta to solve a geometry problem. Incorporate any provided images and text, and strictly follow the given problem context.\n\n"
+                "Task: Contribute to a multi-turn conversation with student_beta to solve a problem. Incorporate any provided images and text, and strictly follow the given problem context.\n\n"
                 "Instructions:\n"
                 "1. Develop a detailed discussion where you articulate your reasoning, think aloud, and challenge student_beta’s approaches.\n"
                 "2. Demonstrate cognitive behaviors including verification (systematic error-checking), backtracking (abandoning failing approaches), subgoal setting (decomposing problems into manageable steps), and backward chaining (reasoning from desired outcomes to initial inputs).\n"
@@ -27,7 +27,7 @@ def get_student_beta_prompt():
         SystemMessage(
             content=(
                 "Role: student_beta\n"
-                "Task: Contribute to a multi-turn conversation with student_alpha to solve a geometry problem. Incorporate any provided images and text, and strictly follow the given problem context.\n\n"
+                "Task: Contribute to a multi-turn conversation with student_alpha to solve a problem. Incorporate any provided images and text, and strictly follow the given problem context.\n\n"
                 "Instructions:\n"
                 "1. Develop a detailed discussion where you articulate your reasoning, think aloud, and challenge student_alpha’s approaches.\n"
                 "2. Demonstrate cognitive behaviors including verification (systematic error-checking), backtracking (abandoning failing approaches), subgoal setting (decomposing problems into manageable steps), and backward chaining (reasoning from desired outcomes to initial inputs).\n"
@@ -48,7 +48,7 @@ def get_teacher_system_prompt():
         SystemMessage(
             content=(
                 "Role: teacher\n"
-                "Task: Evaluate the conversation between student_alpha and student_beta based on the geometry problem, images, and text provided.\n\n"
+                "Task: Evaluate the conversation between student_alpha and student_beta based on the problem, images, and text provided.\n\n"
                 "Instructions:\n"
                 "1. Review the conversation for both the reasoning process and the final answer accuracy.\n"
                 "2. Identify any errors, misconceptions, or incomplete reasoning in the discussion.\n"
