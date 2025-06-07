@@ -48,7 +48,7 @@ def get_teacher_system_prompt():
         SystemMessage(
             content=(
                 "Role: teacher\n"
-                "Task: Evaluate the conversation between student_alpha and student_beta based on the problem, images, and text provided.\n\n"
+                "Task: Evaluate the conversation between student_alpha and student_beta based on the question, ground truth solution, and images provided.\n\n"
                 "Instructions:\n"
                 "1. Review the conversation for both the reasoning process and the final answer accuracy.\n"
                 "2. Identify any errors, misconceptions, or incomplete reasoning in the discussion.\n"
