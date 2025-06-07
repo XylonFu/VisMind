@@ -63,15 +63,17 @@ def clean_text(text: str) -> str:
     return text.strip()
 
 
-def extract_system_message(message_block: List[Dict[str, Any]]) -> str:
-    """Extract system message from content block"""
+def extract_system_message(message_block: List[Dict[str, Any]], image_count: int) -> str:
+    """Extract system message from content block with image tags"""
     for item in message_block:
         if item.get('type') == 'text':
             text = clean_text(item.get('text', ''))
             # Add period if ending with parenthesis
             if text.endswith((')', '）')):
                 text += '.'
-            return f"system: <image> {text}"
+
+            image_tags = " ".join(["<image>"] * image_count)
+            return f"system: {image_tags} {text}" if image_tags else f"system: {text}"
     raise ValueError("No valid text content found")
 
 
@@ -120,8 +122,32 @@ def process_file(filepath: Path) -> Dict[str, Any]:
     # Load JSON data
     data = json.loads(filepath.read_text(encoding='utf-8'))
 
-    # Extract system and ground truth messages
-    system_msg = extract_system_message(data.get('message', {}).get('content', []))
+    # Handle image paths (prioritize image_paths, fallback to image_path)
+    image_paths: List[str] = []
+
+    # Case 1: image_paths field exists (array)
+    if "image_paths" in data and isinstance(data["image_paths"], list):
+        image_paths = [p[6:] if p.startswith("image/") else p
+                       for p in data["image_paths"] if p.strip()]
+
+    # Case 2: no image_paths but has image_path field (string)
+    elif "image_path" in data and data["image_path"]:
+        path_str = data["image_path"]
+        if isinstance(path_str, list):
+            # Handle unexpected array case
+            image_paths = [p[6:] if p.startswith("image/") else p
+                           for p in path_str if p.strip()]
+        else:
+            # Handle single path
+            p = path_str[6:] if path_str.startswith("image/") else path_str
+            if p.strip():
+                image_paths = [p]
+
+    # Extract system message (pass image count)
+    system_msg = extract_system_message(
+        data.get('message', {}).get('content', []),
+        image_count=len(image_paths)
+    )
 
     # Validate and process events
     events = data.get('events', [])
@@ -135,15 +161,10 @@ def process_file(filepath: Path) -> Dict[str, Any]:
     # Combine all messages
     combined = '\n'.join([system_msg] + event_texts)
 
-    # Process image path
-    image_path = data.get('image_path', '')
-    if image_path.startswith('image/'):
-        image_path = image_path[6:]
-
     # Return formatted result
     return {
         "id": data.get('id', ''),
-        "images": [image_path],
+        "images": image_paths,
         "messages": [{"role": "assistant", "content": combined.strip()}]
     }
 
