@@ -1,6 +1,7 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
+# "2. Demonstrate cognitive behaviors including verification (systematic error-checking), backtracking (abandoning failing approaches), subgoal setting (decomposing problems into manageable steps), and backward chaining (reasoning from desired outcomes to initial inputs).\n"
 
 def get_student_alpha_prompt():
     prompt = ChatPromptTemplate.from_messages([
@@ -9,11 +10,10 @@ def get_student_alpha_prompt():
                 "Role: student_alpha\n"
                 "Task: Contribute to a multi-turn conversation with student_beta to solve a problem. Incorporate any provided images and text, and strictly follow the given problem context.\n\n"
                 "Instructions:\n"
-                "1. Develop a detailed discussion where you articulate your reasoning, think aloud, and challenge student_beta’s approaches.\n"
-                "2. Demonstrate cognitive behaviors including verification (systematic error-checking), backtracking (abandoning failing approaches), subgoal setting (decomposing problems into manageable steps), and backward chaining (reasoning from desired outcomes to initial inputs).\n"
-                "3. Seamlessly continue the conversation by integrating any hints or feedback from the teacher.\n"
-                "4. Only output your conversation contribution, excluding any extra content, praise, thanks, or encouragement.\n"
-                "5. Communicate strictly in English, regardless of input language.\n\n"
+                "1. Develop a detailed discussion where you articulate your reasoning, reflect critically, and evaluate student_beta’s approaches by either supporting or challenging them.\n"
+                "2. Seamlessly continue the conversation by integrating any hints or feedback from the teacher.\n"
+                "3. Only output your conversation contribution, excluding any extra content, praise, thanks, or encouragement.\n"
+                "4. Communicate strictly in English, regardless of input language.\n\n"
                 "START THE CONVERSATION NOW. BEGIN WITH 'student_alpha:'."
             )
         ),
@@ -29,12 +29,11 @@ def get_student_beta_prompt():
                 "Role: student_beta\n"
                 "Task: Contribute to a multi-turn conversation with student_alpha to solve a problem. Incorporate any provided images and text, and strictly follow the given problem context.\n\n"
                 "Instructions:\n"
-                "1. Develop a detailed discussion where you articulate your reasoning, think aloud, and challenge student_alpha’s approaches.\n"
-                "2. Demonstrate cognitive behaviors including verification (systematic error-checking), backtracking (abandoning failing approaches), subgoal setting (decomposing problems into manageable steps), and backward chaining (reasoning from desired outcomes to initial inputs).\n"
-                "3. Seamlessly continue the conversation by integrating any hints or feedback from the teacher.\n"
-                "4. After reasoning, place '#TO_TEACHER#' at the end if you believe everything is correct, or '#TO_STUDENT_ALPHA#' if you find mistakes.\n"
-                "5. Only output your conversation contribution, excluding any extra content, praise, thanks, or encouragement.\n"
-                "6. Communicate strictly in English, regardless of input language.\n\n"
+                "1. Develop a detailed discussion where you articulate your reasoning, reflect critically, and evaluate student_alpha’s approaches by either supporting or challenging them.\n"
+                "2. Seamlessly continue the conversation by integrating any hints or feedback from the teacher.\n"
+                "3. After reasoning, place '#TO_TEACHER#' at the end if you believe everything is correct, or '#TO_STUDENT_ALPHA#' if you find mistakes.\n"
+                "4. Only output your conversation contribution, excluding any extra content, praise, thanks, or encouragement.\n"
+                "5. Communicate strictly in English, regardless of input language.\n\n"
                 "START THE CONVERSATION NOW. BEGIN WITH 'student_beta:'."
             )
         ),
