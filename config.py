@@ -32,7 +32,7 @@ event_config = {
     "recursion_limit": 100
 }
 
-CONCURRENCY = 50
+CONCURRENCY = 25
 
 CONDA_ENV_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/conda/env/vllm"
 
