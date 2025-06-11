@@ -41,12 +41,21 @@ if __name__ == "__main__":
     input_dir = Path(args.input_dir)
     output_dir = Path(args.output_dir)
 
+    teacher_log = "teacher_vllm_server.log"
     teacher_server = start_vllm_server(CONDA_ENV_PATH, TEACHER_MODEL_PATH, TEACHER_MODEL_NAME,
-                                       api_key=TEACHER_MODEL_KEYS)
+                                       api_key=TEACHER_MODEL_KEYS, log_file=teacher_log)
+
     try:
+        print("⏳ Waiting for server to start...")
         wait_server()
         sleep(30)
+        print("🚀 Server ready, starting data processing...")
         main(input_dir, output_dir)
+        print("✅ All files processed successfully!")
+    except Exception as e:
+        print(f"❌ Processing failed: {str(e)}")
     finally:
+        print("🛑 Stopping server...")
         stop_server(teacher_server)
         sleep(60)
+        print("👋 Server stopped. Program exiting.")
