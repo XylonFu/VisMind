@@ -1,3 +1,4 @@
+import logging
 import os
 import signal
 import subprocess
@@ -5,6 +6,8 @@ import time
 from datetime import datetime
 
 import requests
+
+logger = logging.getLogger(__name__)
 
 
 def start_vllm_server(conda_env_path, model_path, served_model_name,
@@ -33,7 +36,7 @@ def start_vllm_server(conda_env_path, model_path, served_model_name,
     ]
 
     log_fd = open(log_file, "w")
-    print(f"📝 VLLM server logs will be saved to: {os.path.abspath(log_file)}")
+    logger.info(f"VLLM server logs will be saved to: {os.path.abspath(log_file)}")
 
     return subprocess.Popen(cmd, env=env, stdout=log_fd, stderr=log_fd)
 
@@ -45,14 +48,15 @@ def wait_server(host="127.0.0.1", port=8000, timeout=600):
         try:
             r = requests.get(url)
             if r.status_code == 200:
-                print("Server is up!")
+                logger.info("Server is up and ready")
                 return
         except requests.ConnectionError:
             pass
         time.sleep(10)
-    raise RuntimeError(f"Server didn’t become ready within {timeout}s")
+    raise RuntimeError(f"Server didn't become ready within {timeout}s")
 
 
 def stop_server(process):
+    logger.info("Stopping server...")
     process.send_signal(signal.SIGTERM)
     process.wait()

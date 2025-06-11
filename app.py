@@ -1,4 +1,5 @@
 import argparse
+import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from time import sleep
@@ -9,14 +10,16 @@ from processor import process_single_file
 from server import start_vllm_server, stop_server, wait_server
 from utils.io_utils import output_exists
 
+logger = logging.getLogger(__name__)
+
 
 def main(input_dir: Path, output_dir: Path):
     json_path = input_dir / "json"
     json_files = list(json_path.glob("*.json"))
-    print(f"📂 共发现 {len(json_files)} 个待处理文件", flush=True)
+    logger.info(f"Found {len(json_files)} files to process")
 
     unprocessed_files = [f for f in json_files if not output_exists(f.stem, output_dir)]
-    print(f"🔄 发现 {len(unprocessed_files)} 个未处理文件，开始处理...", flush=True)
+    logger.info(f"Processing {len(unprocessed_files)} unprocessed files")
 
     with ThreadPoolExecutor(max_workers=CONCURRENCY) as executor:
         futures = {
@@ -29,10 +32,15 @@ def main(input_dir: Path, output_dir: Path):
             try:
                 future.result()
             except Exception as e:
-                print(f"❌ {file_name} 执行出错: {str(e)}")
+                logger.error(f"Error processing {file_name}: {str(e)}")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
     parser = argparse.ArgumentParser(description="Process GeoQAPlus data.")
     parser.add_argument("--input_dir", type=str)
     parser.add_argument("--output_dir", type=str)
@@ -46,16 +54,10 @@ if __name__ == "__main__":
                                        api_key=TEACHER_MODEL_KEYS, log_file=teacher_log)
 
     try:
-        print("⏳ Waiting for server to start...", flush=True)
         wait_server()
-        sleep(30)
-        print("🚀 Server ready, starting data processing...", flush=True)
         main(input_dir, output_dir)
-        print("✅ All files processed successfully!", flush=True)
     except Exception as e:
-        print(f"❌ Processing failed: {str(e)}", flush=True)
+        logger.error(f"Processing failed: {str(e)}")
     finally:
-        print("🛑 Stopping server...", flush=True)
         stop_server(teacher_server)
         sleep(60)
-        print("👋 Server stopped. Program exiting.", flush=True)

@@ -1,4 +1,5 @@
 import json
+import logging
 from pathlib import Path
 from typing import Dict, Any, List
 
@@ -11,6 +12,8 @@ from config import (get_agent_config, get_graph_config, event_config,
                     STUDENT_MODEL_NAME, STUDENT_MODEL_BASE, STUDENT_MODEL_KEYS)
 from utils.io_utils import load_image, save_output
 from utils.text_utils import process_answer, MessageEncoder
+
+logger = logging.getLogger(__name__)
 
 
 def process_single_file(json_file: Path, input_dir: Path, output_dir: Path):
@@ -46,13 +49,13 @@ def process_single_file(json_file: Path, input_dir: Path, output_dir: Path):
 
         app = students_teacher.graph(student_alpha_config, student_beta_config, teacher_config, graph_config)
 
-        print(f"🚀 处理中: {json_file.name}...", flush=True)
+        logger.info(f"Processing file: {json_file.name}")
         event_list: List[Dict[str, Any]] = []
 
         for event in app.stream({"messages": [message]}, config=event_config):
             event_list.append(event)
 
         save_output(json_file.stem, image_paths, solution, message, event_list, output_dir, encoder_cls=MessageEncoder)
-        print(f"✅ {json_file.name} 处理完成，保存成功。", flush=True)
+        logger.info(f"Successfully processed and saved: {json_file.name}")
     except Exception as e:
-        print(f"❌ {json_file.name} 处理失败: {str(e)}", flush=True)
+        logger.error(f"Failed to process {json_file.name}: {str(e)}")
