@@ -42,7 +42,7 @@ if __name__ == "__main__":
         handlers=[logging.StreamHandler()]
     )
 
-    my_modules = ["app", "processor", "server", "agents", "utils"]
+    my_modules = ["__main__","app", "processor", "agents", "utils", "server"]
     for module in my_modules:
         logging.getLogger(module).setLevel(logging.INFO)
 
