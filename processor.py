@@ -46,13 +46,13 @@ def process_single_file(json_file: Path, input_dir: Path, output_dir: Path):
 
         app = students_teacher.graph(student_alpha_config, student_beta_config, teacher_config, graph_config)
 
-        print(f"🚀 处理中: {json_file.name}...")
+        print(f"🚀 处理中: {json_file.name}...", flush=True)
         event_list: List[Dict[str, Any]] = []
 
         for event in app.stream({"messages": [message]}, config=event_config):
             event_list.append(event)
 
         save_output(json_file.stem, image_paths, solution, message, event_list, output_dir, encoder_cls=MessageEncoder)
-        print(f"✅ {json_file.name} 处理完成，保存成功。")
+        print(f"✅ {json_file.name} 处理完成，保存成功。", flush=True)
     except Exception as e:
-        print(f"❌ {json_file.name} 处理失败: {str(e)}")
+        print(f"❌ {json_file.name} 处理失败: {str(e)}", flush=True)

@@ -13,10 +13,10 @@ from utils.io_utils import output_exists
 def main(input_dir: Path, output_dir: Path):
     json_path = input_dir / "json"
     json_files = list(json_path.glob("*.json"))
-    print(f"📂 共发现 {len(json_files)} 个待处理文件")
+    print(f"📂 共发现 {len(json_files)} 个待处理文件", flush=True)
 
     unprocessed_files = [f for f in json_files if not output_exists(f.stem, output_dir)]
-    print(f"🔄 发现 {len(unprocessed_files)} 个未处理文件，开始处理...")
+    print(f"🔄 发现 {len(unprocessed_files)} 个未处理文件，开始处理...", flush=True)
 
     with ThreadPoolExecutor(max_workers=CONCURRENCY) as executor:
         futures = {
@@ -46,16 +46,16 @@ if __name__ == "__main__":
                                        api_key=TEACHER_MODEL_KEYS, log_file=teacher_log)
 
     try:
-        print("⏳ Waiting for server to start...")
+        print("⏳ Waiting for server to start...", flush=True)
         wait_server()
         sleep(30)
-        print("🚀 Server ready, starting data processing...")
+        print("🚀 Server ready, starting data processing...", flush=True)
         main(input_dir, output_dir)
-        print("✅ All files processed successfully!")
+        print("✅ All files processed successfully!", flush=True)
     except Exception as e:
-        print(f"❌ Processing failed: {str(e)}")
+        print(f"❌ Processing failed: {str(e)}", flush=True)
     finally:
-        print("🛑 Stopping server...")
+        print("🛑 Stopping server...", flush=True)
         stop_server(teacher_server)
         sleep(60)
-        print("👋 Server stopped. Program exiting.")
+        print("👋 Server stopped. Program exiting.", flush=True)
