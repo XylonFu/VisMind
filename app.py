@@ -7,6 +7,7 @@ from config import (CONCURRENCY, CONDA_ENV_PATH,
                     TEACHER_MODEL_PATH, TEACHER_MODEL_NAME, TEACHER_MODEL_KEYS)
 from processor import process_single_file
 from server import start_vllm_server, stop_server, wait_server
+from utils.io_utils import output_exists
 
 
 def main(input_dir: Path, output_dir: Path):
@@ -14,8 +15,15 @@ def main(input_dir: Path, output_dir: Path):
     json_files = list(json_path.glob("*.json"))
     print(f"📂 共发现 {len(json_files)} 个待处理文件")
 
+    unprocessed_files = [f for f in json_files if not output_exists(f.stem, output_dir)]
+    print(f"🔄 发现 {len(unprocessed_files)} 个未处理文件，开始处理...")
+
     with ThreadPoolExecutor(max_workers=CONCURRENCY) as executor:
-        futures = {executor.submit(process_single_file, file, input_dir, output_dir): file.name for file in json_files}
+        futures = {
+            executor.submit(process_single_file, file, input_dir, output_dir): file.name
+            for file in unprocessed_files
+        }
+
         for future in as_completed(futures):
             file_name = futures[future]
             try:

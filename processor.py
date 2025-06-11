@@ -9,16 +9,11 @@ from agents.utils.prompts import get_student_alpha_prompt, get_student_beta_prom
 from config import (get_agent_config, get_graph_config, event_config,
                     TEACHER_MODEL_NAME, TEACHER_MODEL_BASE, TEACHER_MODEL_KEYS,
                     STUDENT_MODEL_NAME, STUDENT_MODEL_BASE, STUDENT_MODEL_KEYS)
-from utils.io_utils import load_image, output_exists, save_output
+from utils.io_utils import load_image, save_output
 from utils.text_utils import process_answer, MessageEncoder
 
 
 def process_single_file(json_file: Path, input_dir: Path, output_dir: Path):
-    file_stem = json_file.stem
-    if output_exists(file_stem, output_dir):
-        print(f"⏭️ {file_stem} 已存在，跳过处理。")
-        return
-
     try:
         with open(json_file, "r", encoding="utf-8") as f:
             data: Dict[str, Any] = json.load(f)
@@ -57,7 +52,7 @@ def process_single_file(json_file: Path, input_dir: Path, output_dir: Path):
         for event in app.stream({"messages": [message]}, config=event_config):
             event_list.append(event)
 
-        save_output(file_stem, image_paths, solution, message, event_list, output_dir, encoder_cls=MessageEncoder)
+        save_output(json_file.stem, image_paths, solution, message, event_list, output_dir, encoder_cls=MessageEncoder)
         print(f"✅ {json_file.name} 处理完成，保存成功。")
     except Exception as e:
         print(f"❌ {json_file.name} 处理失败: {str(e)}")
