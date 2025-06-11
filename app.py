@@ -37,11 +37,16 @@ def main(input_dir: Path, output_dir: Path):
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        level=logging.WARNING,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[logging.StreamHandler()]
     )
 
-    parser = argparse.ArgumentParser(description="Process GeoQAPlus data.")
+    my_modules = ["app", "processor", "server", "agents", "utils"]
+    for module in my_modules:
+        logging.getLogger(module).setLevel(logging.INFO)
+
+    parser = argparse.ArgumentParser()
     parser.add_argument("--input_dir", type=str)
     parser.add_argument("--output_dir", type=str)
     args = parser.parse_args()
@@ -55,6 +60,7 @@ if __name__ == "__main__":
 
     try:
         wait_server()
+        sleep(30)
         main(input_dir, output_dir)
     except Exception as e:
         logger.error(f"Processing failed: {str(e)}")
