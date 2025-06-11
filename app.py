@@ -37,6 +37,7 @@ if __name__ == "__main__":
                                        api_key=TEACHER_MODEL_KEYS)
     try:
         wait_server()
+        sleep(30)
         main(input_dir, output_dir)
     finally:
         stop_server(teacher_server)
