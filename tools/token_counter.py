@@ -95,10 +95,10 @@ def count_individual_total(directory: str, encoder_name: str = "cl100k_base") ->
 
 if __name__ == "__main__":
     for i in range(1, 2):
-        directory_path = f"../output/GLLaVA70K/event-0603-0{i}"
+        directory_path = f"../output/VisualWebInstruct118K/event-0608-0{i}"
 
-        individual_total = count_individual_total(directory_path)
-        print(f"Total tokens in individual files: {individual_total} tokens")
+        # individual_total = count_individual_total(directory_path)
+        # print(f"Total tokens in individual files: {individual_total} tokens")
 
         base_name = os.path.basename(directory_path.rstrip('/\\'))
         parent_dir = os.path.dirname(directory_path)
