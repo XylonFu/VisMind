@@ -84,7 +84,6 @@ def process_files(jsonl_path, json_dir, output_path, max_length=4096):
     print(f"Results saved to {output_path}")
 
 
-# Example usage
 if __name__ == "__main__":
     jsonl_path = '/gpfs/work/int/qiufengwang/xinlong_fu/programs/star/output/VisualWebInstruct118K/pt-event-0608-01-2300.jsonl'
     json_dir = '/gpfs/work/int/qiufengwang/xinlong_fu/programs/star/input/VisualWebInstruct118K/json'
