@@ -5,6 +5,10 @@ from collections import defaultdict
 from pathlib import Path
 from typing import List, Dict, Any, Pattern, Tuple, Optional
 
+# ======================
+# CONSTANT DEFINITIONS
+# ======================
+
 # Special markers to clean from text
 MARKERS: List[Pattern] = [
     re.compile(r"#TO_STUDENT_ALPHA#"),
@@ -15,6 +19,12 @@ MARKERS: List[Pattern] = [
 
 # Pattern to detect role-only lines (e.g., "system:")
 ROLE_ONLY_PATTERN: Pattern = re.compile(r'^(?:system|student_alpha|student_beta|teacher):\s*$')
+
+# Pattern to detect triple word repetition (case-insensitive)
+TRIPLE_WORD_PATTERN = re.compile(
+    r'\b(\w+)(?:\W+\1\W+){2,}\b',
+    re.IGNORECASE
+)
 
 # Disallowed language character ranges (non-English/math/Greek/punctuation)
 DISALLOWED_PATTERN = re.compile(
@@ -55,12 +65,10 @@ DISALLOWED_PATTERN = re.compile(
     r']'
 )
 
-# Pattern to detect triple word repetition (case-insensitive)
-TRIPLE_WORD_PATTERN = re.compile(
-    r'\b(\w+)(?:\W+\1\W+){2,}\b',
-    re.IGNORECASE
-)
 
+# ======================
+# UTILITY FUNCTIONS
+# ======================
 
 def clean_text(text: str) -> str:
     """Remove special markers and trim whitespace"""
@@ -69,10 +77,32 @@ def clean_text(text: str) -> str:
     return text.strip()
 
 
+def contains_disallowed_language(text: str) -> bool:
+    """Check if text contains disallowed language characters"""
+    return bool(DISALLOWED_PATTERN.search(text))
+
+
 def contains_triple_repetition(text: str) -> bool:
     """Check if text contains triple word repetition"""
     return bool(TRIPLE_WORD_PATTERN.search(text))
 
+
+def extract_event_texts(events: List[Dict[str, Any]]) -> List[str]:
+    """Extract and clean text content from event sequence"""
+    texts: List[str] = []
+    for evt in events:
+        for role, info in evt.items():
+            for msg in info.get('messages', []):
+                cleaned = clean_text(msg.get('content', ''))
+                # Skip role-only lines (e.g., "teacher:")
+                if cleaned and not ROLE_ONLY_PATTERN.match(cleaned):
+                    texts.append(cleaned)
+    return texts
+
+
+# ======================
+# CORE PROCESSING FUNCTIONS
+# ======================
 
 def extract_system_message(message_block: List[Dict[str, Any]], image_count: int) -> str:
     """Extract system message from content block with image tags"""
@@ -86,11 +116,6 @@ def extract_system_message(message_block: List[Dict[str, Any]], image_count: int
             image_tags = " ".join(["<image>"] * image_count)
             return f"system: {image_tags} {text}" if image_tags else f"system: {text}"
     raise ValueError("No valid text content found")
-
-
-def contains_disallowed_language(text: str) -> bool:
-    """Check if text contains disallowed language characters"""
-    return bool(DISALLOWED_PATTERN.search(text))
 
 
 def should_keep_events(events: List[Dict[str, Any]]) -> Tuple[bool, Optional[str]]:
@@ -128,19 +153,6 @@ def should_keep_events(events: List[Dict[str, Any]]) -> Tuple[bool, Optional[str
         return False, "triple word repetition"
 
     return True, None
-
-
-def extract_event_texts(events: List[Dict[str, Any]]) -> List[str]:
-    """Extract and clean text content from event sequence"""
-    texts: List[str] = []
-    for evt in events:
-        for role, info in evt.items():
-            for msg in info.get('messages', []):
-                cleaned = clean_text(msg.get('content', ''))
-                # Skip role-only lines (e.g., "teacher:")
-                if cleaned and not ROLE_ONLY_PATTERN.match(cleaned):
-                    texts.append(cleaned)
-    return texts
 
 
 def process_file(filepath: Path) -> Dict[str, Any]:
@@ -196,6 +208,10 @@ def process_file(filepath: Path) -> Dict[str, Any]:
     }
 
 
+# ======================
+# MAIN PROCESSING FUNCTION
+# ======================
+
 def prepare_event_dataset(input_dir: str, output_file: str, concurrency: int = 256) -> Tuple[int, int, Dict[str, int]]:
     """Process all JSON files in directory and generate JSONL dataset"""
     input_path = Path(input_dir)
@@ -241,11 +257,15 @@ def prepare_event_dataset(input_dir: str, output_file: str, concurrency: int = 2
     return processed_count, dropped_count, drop_reasons
 
 
+# ======================
+# MAIN ENTRY POINT
+# ======================
+
 if __name__ == '__main__':
     # Process specified data partitions
     for i in range(1, 2):
-        input_dir = f'../output/GLLaVA70K/event-0603-0{i}'
-        output_file = f'../output/GLLaVA70K/pt-event-0603-0{i}.jsonl'
+        input_dir = f'../output/VisualWebInstruct118K/event-0608-0{i}'
+        output_file = f'../output/VisualWebInstruct118K/event-0608-0{i}.jsonl'
 
         print(f"\n{'=' * 50}")
         print(f"Processing partition {i}: {input_dir}")
