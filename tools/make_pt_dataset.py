@@ -1,8 +1,9 @@
 import concurrent.futures
 import json
 import re
+from collections import defaultdict
 from pathlib import Path
-from typing import List, Dict, Any, Pattern, Tuple
+from typing import List, Dict, Any, Pattern, Tuple, Optional
 
 # Special markers to clean from text
 MARKERS: List[Pattern] = [
@@ -18,41 +19,46 @@ ROLE_ONLY_PATTERN: Pattern = re.compile(r'^(?:system|student_alpha|student_beta|
 # Disallowed language character ranges (non-English/math/Greek/punctuation)
 DISALLOWED_PATTERN = re.compile(
     r'['
-    r'\u0400-\u04FF'  # 西里尔字母
-    r'\u0590-\u05FF'  # 希伯来语
-    r'\u0600-\u06FF'  # 阿拉伯语
-    # 印度语系
-    r'\u0900-\u097F'  # 天城文
-    r'\u0980-\u09FF'  # 孟加拉语
-    r'\u0A80-\u0AFF'  # 古吉拉特语
-    r'\u0B00-\u0B7F'  # 奥里亚语
-    r'\u0B80-\u0BFF'  # 泰米尔语
-    r'\u0C00-\u0C7F'  # 泰卢固语
-    r'\u0C80-\u0CFF'  # 卡纳达语
-    r'\u0D00-\u0D7F'  # 马拉雅拉姆语
-    r'\u0D80-\u0DFF'  # 僧伽罗语
-    # 东南亚语系
-    r'\u0E00-\u0E7F'  # 泰语
-    r'\u0E80-\u0EFF'  # 老挝语
-    r'\u0F00-\u0FFF'  # 藏语
-    r'\u1000-\u109F'  # 缅甸语
-    r'\u1780-\u17FF'  # 高棉语
-    # 其他文字
-    r'\u10A0-\u10FF'  # 格鲁吉亚语
-    r'\u1100-\u11FF'  # 韩文字母
-    r'\u1200-\u137F'  # 埃塞俄比亚语
-    r'\u1400-\u167F'  # 加拿大原住民文字
-    r'\u1800-\u18AF'  # 蒙古语
-    # 日语
-    r'\u3040-\u309F'  # 平假名
-    r'\u30A0-\u30FF'  # 片假名
-    # 中文
-    r'\u3400-\u4DBF'  # 中文扩展
-    r'\u4E00-\u9FFF'  # 中文基本汉字
-    # 其他
-    r'\uA980-\uA9DF'  # 爪哇语
-    r'\uAC00-\uD7AF'  # 韩文字节
+    # Indian scripts
+    r'\u0900-\u097F'  # Devanagari
+    r'\u0980-\u09FF'  # Bengali
+    r'\u0A80-\u0AFF'  # Gujarati
+    r'\u0B00-\u0B7F'  # Oriya
+    r'\u0B80-\u0BFF'  # Tamil
+    r'\u0C00-\u0C7F'  # Telugu
+    r'\u0C80-\u0CFF'  # Kannada
+    r'\u0D00-\u0D7F'  # Malayalam
+    r'\u0D80-\u0DFF'  # Sinhala
+    # Southeast Asian scripts
+    r'\u0E00-\u0E7F'  # Thai
+    r'\u0E80-\u0EFF'  # Lao
+    r'\u0F00-\u0FFF'  # Tibetan
+    r'\u1000-\u109F'  # Burmese
+    r'\u1780-\u17FF'  # Khmer
+    # Japanese
+    r'\u3040-\u309F'  # Hiragana
+    r'\u30A0-\u30FF'  # Katakana
+    # Chinese
+    r'\u3400-\u4DBF'  # CJK Unified Ideographs Extension A
+    r'\u4E00-\u9FFF'  # CJK Unified Ideographs
+    # Others
+    r'\uA980-\uA9DF'  # Javanese
+    r'\uAC00-\uD7AF'  # Hangul Syllables
+    r'\u0400-\u04FF'  # Cyrillic
+    r'\u0590-\u05FF'  # Hebrew
+    r'\u0600-\u06FF'  # Arabic
+    r'\u10A0-\u10FF'  # Georgian
+    r'\u1100-\u11FF'  # Hangul Jamo
+    r'\u1200-\u137F'  # Ethiopic
+    r'\u1400-\u167F'  # Unified Canadian Aboriginal Syllabics
+    r'\u1800-\u18AF'  # Mongolian
     r']'
+)
+
+# Pattern to detect triple word repetition (case-insensitive)
+TRIPLE_WORD_PATTERN = re.compile(
+    r'\b(\w+)(?:\W+\1\W+){2,}\b',
+    re.IGNORECASE
 )
 
 
@@ -61,6 +67,11 @@ def clean_text(text: str) -> str:
     for marker in MARKERS:
         text = marker.sub('', text)
     return text.strip()
+
+
+def contains_triple_repetition(text: str) -> bool:
+    """Check if text contains triple word repetition"""
+    return bool(TRIPLE_WORD_PATTERN.search(text))
 
 
 def extract_system_message(message_block: List[Dict[str, Any]], image_count: int) -> str:
@@ -82,26 +93,41 @@ def contains_disallowed_language(text: str) -> bool:
     return bool(DISALLOWED_PATTERN.search(text))
 
 
-def should_keep_events(events: List[Dict[str, Any]]) -> bool:
+def should_keep_events(events: List[Dict[str, Any]]) -> Tuple[bool, Optional[str]]:
     """Determine if event sequence meets retention criteria"""
     if not events:
-        return False
+        return False, "empty events"
 
     # Check for disallowed languages in all events
     for event in events:
         for role_info in event.values():
             for msg in role_info.get('messages', []):
                 if contains_disallowed_language(msg.get('content', '')):
-                    return False
+                    return False, "disallowed language"
 
     # Check for end marker in last event
     last_event = events[-1]
+    end_marker_found = False
     for role_info in last_event.values():
         for msg in role_info.get('messages', []):
             if '#END_CONVERSATION#' in msg.get('content', ''):
-                return True
+                end_marker_found = True
+                break
+        if end_marker_found:
+            break
 
-    return False
+    if not end_marker_found:
+        return False, "missing end marker"
+
+    # Extract event texts for repetition check
+    texts = extract_event_texts(events)
+    combined_text = " ".join(texts)
+
+    # Check for triple word repetition
+    if contains_triple_repetition(combined_text):
+        return False, "triple word repetition"
+
+    return True, None
 
 
 def extract_event_texts(events: List[Dict[str, Any]]) -> List[str]:
@@ -151,12 +177,13 @@ def process_file(filepath: Path) -> Dict[str, Any]:
 
     # Validate and process events
     events = data.get('events', [])
-    if not should_keep_events(events):
-        raise ValueError("File rejected by filter rules")
+    keep, reason = should_keep_events(events)
+    if not keep:
+        raise ValueError(f"rejected: {reason}")
 
     event_texts = extract_event_texts(events)
     if not event_texts:
-        raise ValueError("No valid conversation after extraction")
+        raise ValueError("no valid conversation after extraction")
 
     # Combine all messages
     combined = '\n'.join([system_msg] + event_texts)
@@ -169,7 +196,7 @@ def process_file(filepath: Path) -> Dict[str, Any]:
     }
 
 
-def prepare_event_dataset(input_dir: str, output_file: str, concurrency: int = 256) -> Tuple[int, int]:
+def prepare_event_dataset(input_dir: str, output_file: str, concurrency: int = 256) -> Tuple[int, int, Dict[str, int]]:
     """Process all JSON files in directory and generate JSONL dataset"""
     input_path = Path(input_dir)
     output_path = Path(output_file)
@@ -177,6 +204,7 @@ def prepare_event_dataset(input_dir: str, output_file: str, concurrency: int = 2
 
     processed_count = 0
     dropped_count = 0
+    drop_reasons = defaultdict(int)
     filepaths = list(input_path.glob('*.json'))
 
     print(f"Processing {len(filepaths)} files from: {input_dir}")
@@ -195,12 +223,22 @@ def prepare_event_dataset(input_dir: str, output_file: str, concurrency: int = 2
                         print(f"Processed {i}/{len(filepaths)} files...")
                 except Exception as e:
                     dropped_count += 1
+                    error_msg = str(e)
+                    # Extract reason from error message
+                    if error_msg.startswith("rejected: "):
+                        reason = error_msg.split("rejected: ", 1)[1]
+                        drop_reasons[reason] += 1
+                    else:
+                        drop_reasons["other"] += 1
                     # Uncomment for detailed error logging
-                    # print(f"Error processing {fp.name}: {str(e)}")
+                    # print(f"Error processing {fp.name}: {error_msg}")
 
     print(f"Processing complete: {processed_count} files processed, {dropped_count} files dropped")
+    print("Drop reasons:")
+    for reason, count in drop_reasons.items():
+        print(f"  - {reason}: {count}")
     print(f"Output saved to: {output_path}")
-    return processed_count, dropped_count
+    return processed_count, dropped_count, drop_reasons
 
 
 if __name__ == '__main__':
@@ -211,10 +249,11 @@ if __name__ == '__main__':
 
         print(f"\n{'=' * 50}")
         print(f"Processing partition {i}: {input_dir}")
-        processed, dropped = prepare_event_dataset(
+        processed, dropped, drop_reasons = prepare_event_dataset(
             input_dir=input_dir,
             output_file=output_file,
             concurrency=1024
         )
         print(f"Partition {i} result: {processed} processed, {dropped} dropped")
+        print(f"Drop reasons: {dict(drop_reasons)}")
         print(f"{'=' * 50}\n")
