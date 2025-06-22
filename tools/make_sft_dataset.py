@@ -87,6 +87,6 @@ def process_files(jsonl_path, json_dir, output_path, max_length=4096):
 if __name__ == "__main__":
     jsonl_path = '../output/VisualWebInstruct118K/pt-event-0608-01-2300.jsonl'
     json_dir = '../input/VisualWebInstruct118K/json'
-    output_path = '../VisualWebInstruct118K/sft-pairs-0608-01-2300.jsonl'
+    output_path = '../output/VisualWebInstruct118K/sft-pairs-0608-01-2300.jsonl'
 
     process_files(jsonl_path, json_dir, output_path, max_length=4096)
