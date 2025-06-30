@@ -22,7 +22,13 @@ ROLE_ONLY_PATTERN: Pattern = re.compile(r'^(?:system|student_alpha|student_beta|
 
 # Pattern to detect triple word repetition (case-insensitive)
 TRIPLE_WORD_PATTERN = re.compile(
-    r'\b(\w+)(?:\W+\1\W+){2,}\b',
+    r'\b(?:'
+    r'(\w+)(?:\W+\1\W+){2,}'
+    r'|'
+    r'(\w+\s+\w+)(?:\W+\2\W+){2,}'
+    r'|'
+    r'(\w+\s+\w+\s+\w+)(?:\W+\3\W+){2,}'
+    r')\b',
     re.IGNORECASE
 )
 
