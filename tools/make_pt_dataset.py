@@ -271,7 +271,7 @@ if __name__ == '__main__':
     # Process specified data partitions
     for i in range(1, 2):
         input_dir = f'../output/VisualWebInstruct118K/event-0608-0{i}'
-        output_file = f'../output/VisualWebInstruct118K/event-0608-0{i}.jsonl'
+        output_file = f'../output/VisualWebInstruct118K/pt-event-0608-0{i}.jsonl'
 
         print(f"\n{'=' * 50}")
         print(f"Processing partition {i}: {input_dir}")
