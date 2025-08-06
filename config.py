@@ -32,16 +32,16 @@ event_config = {
     "recursion_limit": 100
 }
 
-CONCURRENCY = 50
+CONCURRENCY = 100
 
 CONDA_ENV_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/conda/env/vllm"
 
 STUDENT_MODEL_BASE = os.getenv("STUDENT_MODEL_BASE")
 STUDENT_MODEL_KEYS = os.getenv("STUDENT_MODEL_KEYS")
-STUDENT_MODEL_NAME = "qwen2.5-vl-32b-instruct"
-STUDENT_MODEL_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/downloads/models/Qwen/Qwen2.5-VL-32B-Instruct"
+STUDENT_MODEL_NAME = "InternVL3-14B"
+STUDENT_MODEL_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/downloads/models/OpenGVLab/InternVL3-14B"
 
 TEACHER_MODEL_BASE = os.getenv("TEACHER_MODEL_BASE")
 TEACHER_MODEL_KEYS = os.getenv("TEACHER_MODEL_KEYS")
-TEACHER_MODEL_NAME = "qwen2.5-vl-32b-instruct"
-TEACHER_MODEL_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/downloads/models/Qwen/Qwen2.5-VL-32B-Instruct"
+TEACHER_MODEL_NAME = "InternVL3-14B"
+TEACHER_MODEL_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/downloads/models/OpenGVLab/InternVL3-14B"
