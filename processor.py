@@ -23,7 +23,7 @@ def process_single_file(json_file: Path, input_dir: Path, output_dir: Path):
 
         question = data["question"]
         solution = process_answer(data["answer"])
-        image_paths = data["image"]
+        image_paths = data["image_paths"]
 
         if isinstance(image_paths, str):
             image_paths = [image_paths]
