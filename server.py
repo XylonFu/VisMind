@@ -7,6 +7,7 @@ from datetime import datetime
 
 import psutil
 import requests
+import torch
 
 try:
     import pynvml
@@ -172,3 +173,6 @@ def stop_server(process, devices=None, wait_timeout=60):
             ok = wait_gpu_memory_released(device_id, timeout=wait_timeout)
             if not ok:
                 print(f"[Warning] GPU {device_id} memory not fully released after timeout.")
+
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()

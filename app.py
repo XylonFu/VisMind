@@ -2,6 +2,7 @@ import argparse
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+from time import sleep
 
 from config import (CONCURRENCY, CONDA_ENV_PATH,
                     TEACHER_MODEL_PATH, TEACHER_MODEL_NAME, TEACHER_MODEL_KEYS)
@@ -56,6 +57,7 @@ if __name__ == "__main__":
 
     teacher_log = "teacher_vllm_server.log"
     teacher_server = start_vllm_server(CONDA_ENV_PATH, TEACHER_MODEL_PATH, TEACHER_MODEL_NAME,
+                                       devices=[0, 1], tensor_parallel_size=2,
                                        api_key=TEACHER_MODEL_KEYS, log_file=teacher_log)
 
     try:
@@ -65,3 +67,4 @@ if __name__ == "__main__":
         logger.error(f"Processing failed: {str(e)}")
     finally:
         stop_server(teacher_server)
+        sleep(30)
