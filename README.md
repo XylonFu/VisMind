@@ -7,8 +7,8 @@ Addressing the limitations of conventional stateless synthesis, VisMind introduc
 ## ⚙️ Core Mechanism
 
 Built on [LangGraph](https://github.com/langchain-ai/langgraph), the framework orchestrates a multi-turn Markovian interaction among three specialized agents:
-* **Peer-reasoning Students ($\alpha$ and $\beta$):** Engage in bidirectional critique. They iteratively generate reasoning steps, explore alternative paths, and validate or challenge each other's logic to enforce autonomous revisions.
-* **Ground-truth-aware Teacher ($\tau$):** Possesses privileged access to the ground-truth solution. When invoked, it evaluates the students' accumulated dialogue history and provides constructive hints and corrective feedback without directly revealing the final answer.
+* Peer-reasoning Students ($\alpha$ and $\beta$): Engage in bidirectional critique. They iteratively generate reasoning steps, explore alternative paths, and validate or challenge each other's logic to enforce autonomous revisions.
+* Ground-truth-aware Teacher ($\tau$): Possesses privileged access to the ground-truth solution. When invoked, it evaluates the students' accumulated dialogue history and provides constructive hints and corrective feedback without directly revealing the final answer.
 
 ## 📂 Repository Structure
 
@@ -48,8 +48,8 @@ TEACHER_MODEL_BASE="http://127.0.0.1:8000/v1"
 TEACHER_MODEL_KEYS="EMPTY"
 ```
 
-### 3. Source Code Configuration (Action Required)
-Before executing the pipeline, **you must update the hardcoded paths** in `config.py` to match your local file system:
+### 3. Source Code Configuration
+Before executing the pipeline, you must update the hardcoded paths in `config.py` to match your local file system:
 * `CONDA_ENV_PATH`: Path to your Conda environment (used by `server.py` to auto-launch vLLM).
 * `STUDENT_MODEL_PATH` & `TEACHER_MODEL_PATH`: Absolute paths to the local model weights.
 * `CONCURRENCY`: Adjust the `ThreadPoolExecutor` max workers (default: 80) based on your hardware capacity.
@@ -65,7 +65,7 @@ Place your raw visual instruction data inside the `input/` directory. The framew
 ### Step 2: SSD Generation
 Execute `app.py` to start the multi-agent synthesis pipeline. 
 
-> ⚠️ **Hardware & Server Dependency:** > `app.py` automatically initializes a local vLLM server for the **Teacher** agent (defaulting to `devices=[0, 1]`, `tensor_parallel_size=2`). **You must independently start and manage the vLLM server for the Student models**, ensuring it is accessible via the URL specified in your `.env` file.
+> ⚠️ Hardware & server dependency: `app.py` automatically initializes a local vLLM server for the teacher agent (defaulting to `devices=[0, 1]`, `tensor_parallel_size=2`). You must independently start and manage the vLLM server for the student models, ensuring it is accessible via the URL specified in your `.env` file.
 
 ```bash
 python app.py \
@@ -77,21 +77,21 @@ python app.py \
 ### Step 3: Data Filtering & Pipeline Preparation
 Utilize the scripts in `tools/` to filter the raw interaction traces into training-ready corpora.
 
-> ⚠️ **Path Modification:** All scripts in the `tools/` directory contain hardcoded input/output paths within their `if __name__ == "__main__":` blocks. **Manually edit these paths before execution.**
+> ⚠️ Path modification: All scripts in the `tools/` directory contain hardcoded input/output paths within their `if __name__ == "__main__":` blocks. Manually edit these paths before execution.
 
-* **Build CPT (Mid-training) Dataset:**
-  Enforces terminal state validation (`#END_CONVERSATION#`) and executes the three-stage rule-based filtering pipeline (**Language Verification**, **Repetition Detection**, and **Format Cleaning**) to yield the final SSD corpus:
+* Build CPT (mid-training) dataset:
+  Enforces terminal state validation (`#END_CONVERSATION#`) and executes the three-stage rule-based filtering pipeline (language verification, repetition detection, and format cleaning) to yield the final SSD corpus.
   ```bash
   python tools/make_pt_dataset.py
   ```
 
-* **Build SFT Dataset:**
-  Extracts the original visual instruction seeds and formats them into standard QA pairs adhering to a strict token length limit (default: 4096):
+* Build SFT dataset:
+  Extracts the original visual instruction seeds and formats them into standard QA pairs adhering to a strict token length limit (default: 4096).
   ```bash
   python tools/make_sft_dataset.py
   ```
 
 ### Step 4: Auxiliary Tools
-* **Token Counting:** `python tools/token_counter.py` (Calculates individual and combined token statistics using `tiktoken`).
-* **Deduplication:** `python tools/token_dedupor.py` (Removes duplicate visual queries sharing the exact same first image).
-* **Truncation/Sampling:** `python tools/token_truncator.py` (Randomly samples the dataset to fit within a specified maximum token budget).
+* Token counting: `python tools/token_counter.py` (Calculates individual and combined token statistics using tiktoken).
+* Deduplication: `python tools/token_dedupor.py` (Removes duplicate visual queries sharing the exact same first image).
+* Truncation/sampling: `python tools/token_truncator.py` (Randomly samples the dataset to fit within a specified maximum token budget).
