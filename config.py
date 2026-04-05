@@ -34,14 +34,14 @@ event_config = {
 
 CONCURRENCY = 80
 
-CONDA_ENV_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/conda/env/vllm"
+CONDA_ENV_PATH = "/path/to/your/conda/env/vllm"
 
 STUDENT_MODEL_BASE = os.getenv("STUDENT_MODEL_BASE")
 STUDENT_MODEL_KEYS = os.getenv("STUDENT_MODEL_KEYS")
 STUDENT_MODEL_NAME = "InternVL3-14B"
-STUDENT_MODEL_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/downloads/models/OpenGVLab/InternVL3-14B"
+STUDENT_MODEL_PATH = "/path/to/your/model/weights"
 
 TEACHER_MODEL_BASE = os.getenv("TEACHER_MODEL_BASE")
 TEACHER_MODEL_KEYS = os.getenv("TEACHER_MODEL_KEYS")
 TEACHER_MODEL_NAME = "InternVL3-14B"
-TEACHER_MODEL_PATH = "/gpfs/work/int/qiufengwang/xinlong_fu/downloads/models/OpenGVLab/InternVL3-14B"
+TEACHER_MODEL_PATH = "/path/to/your/model/weights"
