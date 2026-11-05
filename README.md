@@ -2,6 +2,8 @@
 
 **Xinlong Fu, Zihao Zhou, Qiufeng Wang**
 
+*Findings of the Association for Computational Linguistics: EMNLP 2026*
+
 [📄 Paper](https://aclanthology.org/2026.findings-emnlp.1158/) | [💻 Code](https://github.com/XylonFu/VisMind)
 
 VisMind is a multi-agent data synthesis framework designed for the mid-training phase of Vision-Language Models (VLMs).
